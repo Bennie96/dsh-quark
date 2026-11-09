@@ -116,15 +116,26 @@ node <DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs get-user-info
 
 ## 安装插件
 
-**方式一：让 agent 装**
+**方式一：直接装打包好的 tgz**
 
-把仓库放到本地，然后让 agent 装这个目录，要绝对路径：
+不用先 clone，让 agent 执行：
 
 ```js
-plugin_manager({ action: 'install_bundle', target: '<仓库目录的绝对路径>' })
+plugin_manager({
+  action: 'install_bundle',
+  target: 'https://github.com/Bennie96/dsh-quark/releases/latest/download/dsh-quark.tgz',
+})
 ```
 
-**方式二：先 clone 再装**
+`latest` 会跟随最新发布版本。想钉住某个版本，把 `latest` 换成标签名：
+
+```
+https://github.com/Bennie96/dsh-quark/releases/download/v0.1.0/dsh-quark.tgz
+```
+
+这种装法把依赖写成一条 URL，和 `dsh-ima` 等插件的安装形态一致。
+
+**方式二：clone 仓库后装本地目录**
 
 ```bash
 git clone https://github.com/Bennie96/dsh-quark.git ~/dsh-quark
@@ -134,7 +145,9 @@ git clone https://github.com/Bennie96/dsh-quark.git ~/dsh-quark
 plugin_manager({ action: 'install_bundle', target: '<~/dsh-quark 的绝对路径>' })
 ```
 
-`install_bundle` 接受任何本地包目录，放哪都行。它会把目录登记到当前 profile 的 `package.json`（写成 `link:` 依赖），并把 `dsh-quark` 加进 `dsh.profile.bundles`。
+这种装法把依赖写成 `link:`，指向你本地那个目录。适合改代码的场景：改完重挂一次插件就生效，不用重新打包。代价是这个目录不能删、不能挪，否则插件会加载失败。
+
+`install_bundle` 接受本地目录、URL、npm 包名三种 `target`。装完它会更新当前 profile 的 `package.json` 依赖，并把 `dsh-quark` 加进 `dsh.profile.bundles`。
 
 装完一般当场生效，返回里有 `"application":"applied"`。如果左侧栏没出现云朵图标，让 agent 重挂一次：
 

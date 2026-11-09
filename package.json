@@ -19,12 +19,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_GITHUB_NAME/dsh-quark.git"
+    "url": "git+https://github.com/Bennie96/dsh-quark.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_GITHUB_NAME/dsh-quark/issues"
+    "url": "https://github.com/Bennie96/dsh-quark/issues"
   },
-  "homepage": "https://github.com/YOUR_GITHUB_NAME/dsh-quark#readme",
+  "homepage": "https://github.com/Bennie96/dsh-quark#readme",
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

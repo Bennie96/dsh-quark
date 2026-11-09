@@ -1,0 +1,29 @@
+# 依赖与构建产物
+node_modules/
+pnpm-lock.yaml.bak
+*.tgz
+*.zip
+
+# 本地暂存 / 测试脚本（含本机路径与测试数据）
+_quark_staging/
+*.out.ndjson
+*.err.log
+cli-*.ndjson
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 授权凭据绝不能进仓库
+config.json
+**/deepseek/config.json
+.env
+.env.*
+*.pem
+*.key
+
+push-to-github.ps1
+PUSHING.md

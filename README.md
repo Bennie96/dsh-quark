@@ -116,9 +116,19 @@ node <DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs get-user-info
 
 ## 安装插件
 
-**方式一：直接装打包好的 tgz**
+**方式一：从 npm 装（推荐）**
 
-不用先 clone，让 agent 执行：
+插件已发布到 npm，包名就是 `dsh-quark`：
+
+```js
+plugin_manager({ action: 'install_bundle', target: 'dsh-quark' })
+```
+
+更简单的办法是打开插件页「添加插件」，在「包名或地址」里填 `dsh-quark` 直接装。这种装法依赖写成版本号，升级跟着 `npm update` 走，不用管 GitHub 通不通。
+
+**方式二：直接装打包好的 tgz**
+
+如果 npm 装不上（网络、镜像问题），让 agent 执行：
 
 ```js
 plugin_manager({
@@ -135,7 +145,7 @@ https://github.com/Bennie96/dsh-quark/releases/download/v0.1.0/dsh-quark.tgz
 
 这种装法把依赖写成一条 URL，和 `dsh-ima` 等插件的安装形态一致。
 
-**方式二：clone 仓库后装本地目录**
+**方式三：clone 仓库后装本地目录**
 
 ```bash
 git clone https://github.com/Bennie96/dsh-quark.git ~/dsh-quark

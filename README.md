@@ -14,7 +14,7 @@
 | --- | --- |
 | **左侧栏 → 夸克网盘** | 主面板：账号和容量、逐级浏览目录、搜索、底栏 9 个操作（新建文件夹、上传、下载、移动、分享、批量重命名、相册整理、整批归类、AI 总结） |
 | **会话右侧栏 → 夸克网盘** | 同一个面板的窄版，聊天时随手翻网盘、把文件引用进对话 |
-| **agent 工具 `quark_*`** | 14 个工具，让模型自己查环境、列目录、搜文件、下载、整理 |
+| **agent 工具 `quark_*`** | 15 个工具，让模型自己查环境、列目录、搜文件、下载、整理 |
 
 两个入口各有一个显示开关（插件详情页里），关掉左侧栏会真的把入口摘掉，不是只隐藏。
 
@@ -39,32 +39,69 @@
 
 ### 官方 Skill 需要单独装 —— 但只装一次
 
-插件**不会**替你装它，因为那是夸克的官方发行包（含授权流程），不是本仓库的东西。装好之后，本插件会自动找到并一直复用；**以后升级/重装本插件都不用再装 Skill**。
+插件**不会**替你装它，因为那是夸克官方发行包（含账号授权流程），不是本仓库的东西。装好之后本插件会自动找到并一直复用；**以后升级 / 重装本插件都不用再装 Skill**。
 
-**装法（任选其一）**
+官方 Skill 页面：<https://b.quark.cn/apps/quarkcloud_skill_info/routes/V-sc7gOBT>
+（页面上有「下载 Skill」按钮和「安装指南」）
 
-1. 在对话里说「请安装 夸克网盘 Skill，并授权账号」，agent 会按官方指引装好并引导授权。
-2. 手动跑官方包里的安装脚本：
+**装法 A —— 让 agent 装（推荐）**
+
+在对话里直接说下面这句，官方给的就是这段提示词：
+
+```
+请安装 夸克网盘Skill,并授权账号
+```
+
+agent 会读完官方说明、装好、再引导你完成账号授权。
+
+**装法 B —— 手动装**
+
+先下载官方 zip（页面上的「下载 Skill」按钮，或这个直链）：
+
+```
+https://pdds.quark.cn/download/stfile/eekkigineefiegmgo/quarkclouddrive-1.0.25.zip
+```
+
+然后把 zip **解压到** `<DSH_HOME>/skills/quarkclouddrive/`，解压后目录应该长这样：
+
+```
+<DSH_HOME>/skills/quarkclouddrive/
+├── SKILL.md
+├── references/          （12 个 .md）
+└── scripts/
+    ├── quark-drive.cjs
+    ├── install.sh
+    ├── uninstall.sh
+    └── hash-worker.cjs
+```
+
+到这里其实已经能用了（CLI 本体在 zip 里）。再跑一次安装脚本做环境自检与版本对齐：
 
 ```bash
-bash <skill-dir>/scripts/install.sh
+cd <DSH_HOME>/skills/quarkclouddrive
+bash scripts/install.sh
 ```
 
-装好后应该存在这个文件：
+看到 `{"type":"install_result","success":true,...}` 就成功了。
 
-```
-<DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs
-```
+> **两个坑，先看再动手**
+>
+> 1. **`install.sh` 要在 Git Bash / WSL 里跑，不要用 PowerShell。** 脚本依赖 `curl` + `unzip` + `node`；PowerShell 的 PATH 里通常没有 `unzip`，会失败。Git for Windows 自带的 `C:\Program Files\Git\bin\bash.exe` 里三样都齐全。
+> 2. **必须先解压 zip，再跑 `install.sh`。** 只把 `install.sh` 单独拷到一个空目录再跑，会因为找不到同级的 `quark-drive.cjs` 而报 `CLI 入口文件不存在`，并在 `scripts/` 下多套一层 `scripts/`。脚本判断"这是首次安装还是升级"的依据是"同目录下有没有 `quark-drive.cjs`"。
 
-验证：
+验证装好了：
 
 ```bash
+node <DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs -V
 node <DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs get-user-info
 ```
 
-能打印昵称和容量就成了。
+第一条打印版本号（如 `1.0.25-876f30d`）；第二条打印昵称和容量。如果第二条回 `{"code":-103,"msg":"未登录..."}`，说明 CLI 正常、只是还没授权，跑 `login` 或让 agent 引导授权即可。
 
-**已经装过了会怎样？** 插件只做只读探测（`fs.statSync` 看文件在不在），不会覆盖、不会改动、也不会重装 Skill。重复安装本插件是安全的。
+**已经装过了会怎样？** 两种情况都安全：
+
+- **只装本插件、Skill 已在**：插件只做只读探测（`fs.statSync` 看文件在不在），不覆盖、不改动、不重装 Skill。
+- **重复跑官方 `install.sh`**：脚本是幂等的，已是最新版本时返回 `{"success":true,"updated":false,"from_version":"1.0.25","to_version":"1.0.25"}`，不会重装。
 
 **装在别的位置？** 用环境变量指过去：
 
@@ -73,17 +110,54 @@ node <DSH_HOME>/skills/quarkclouddrive/scripts/quark-drive.cjs get-user-info
 
 **怎么确认当前状态？** 让 agent 调 `quark_check_env`，或看面板顶部的提示。它会告诉你：Skill 装没装、版本号、CLI 在哪、账号授权没授权。
 
+> **Node 版本**：官方 `install.sh` 要求 Node ≥ 16，本插件要求 ≥ 18。装 Node 18+ 两边都满足。
+
 ## 安装插件
 
-把仓库克隆下来，然后在 DSH 里让 agent 安装这个目录：
+**装法 A —— 让 agent 装（推荐）**
+
+把仓库克隆或下载到本地，然后在对话里让 agent 装这个目录（要绝对路径）：
 
 ```js
 plugin_manager({ action: 'install_bundle', target: '<这个仓库的绝对路径>' })
 ```
 
-装完重启 DSH（或让 agent 把插件 disable → enable 一次）。左侧栏出现云朵图标就是成功了。
+**装法 B —— 手动 clone 再让 agent 装**
 
-**卸载**：`plugin_manager({ action: 'remove_bundle', target: 'dsh-quark' })`。卸载本插件不影响官方 Skill，也不会撤销夸克授权。
+想自己控制版本的话，先 clone 到本地任意目录，再把那个目录交给 `plugin_manager`：
+
+```bash
+git clone https://github.com/Bennie96/dsh-quark.git ~/dsh-quark
+```
+
+```js
+plugin_manager({ action: 'install_bundle', target: '<~/dsh-quark 的绝对路径>' })
+```
+
+`install_bundle` 接受任何本地包目录，所以目录放哪都行 —— 它会自己登记到当前 profile 的 `package.json`（写成 `link:` 依赖）并把 `dsh-quark` 加进 `dsh.profile.bundles`。
+
+装完通常当场生效（返回 `"application":"applied"`）。如果左侧栏没出现云朵图标，让 agent 把插件重挂一次：
+
+```js
+plugin_manager({ action: 'set_plugin', target: 'include:dsh-quark', enabled: false })
+plugin_manager({ action: 'set_plugin', target: 'include:dsh-quark', enabled: true })
+```
+
+> 注意 `set_plugin` 的 `target` 是 **entryId**（`include:dsh-quark`），不是包名 `dsh-quark`。传包名会报 `unknown-plugin`。
+
+**还是没出现？** 按这个顺序排查：
+
+1. 插件详情页（设置 → 插件 → dsh-quark）里那两行「显示开关」是不是被关掉了 —— 关掉是真的摘掉入口，不是隐藏。
+2. 面板顶部有没有报「还没装夸克网盘官方 Skill」—— 那是 Skill 没装，不是插件没装。
+3. 让 agent 调 `quark_check_env`，它会把 Skill 路径、版本、授权状态一次说清。
+
+**卸载**
+
+```js
+plugin_manager({ action: 'remove_bundle', target: 'dsh-quark' })
+```
+
+卸载本插件不影响官方 Skill，也不会撤销夸克账号授权。
 
 ## 使用方法
 
@@ -150,7 +224,7 @@ plugin_manager({ action: 'install_bundle', target: '<这个仓库的绝对路径
 > 总结一下网盘里的 JCIS 那篇 PDF
 > 把搜索结果里这几个文件批量重命名成 2026-01 开头的
 
-agent 会自己选工具。14 个工具见下表。
+agent 会自己选工具。15 个工具见下表。
 
 ## agent 工具
 

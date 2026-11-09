@@ -62,6 +62,8 @@ agent 会读完官方说明、装好、再引导你完成账号授权。
 https://pdds.quark.cn/download/stfile/eekkigineefiegmgo/quarkclouddrive-1.0.25.zip
 ```
 
+（这个链接钉死在 1.0.25。想要最新版就用页面上那个「下载 Skill」按钮，它总给当前版本；`install.sh` 自己也会去官方接口查最新版号。）
+
 然后把 zip **解压到** `<DSH_HOME>/skills/quarkclouddrive/`，解压后目录应该长这样：
 
 ```

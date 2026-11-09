@@ -1,6 +1,6 @@
 # dsh-quark
 
-把夸克网盘接进 DeepSeek Harness。左侧栏有主面板，会话右侧栏有标签页，agent 也能直接调用网盘工具。
+把夸克网盘接进 DeepSeek Harness，以便agent直接调用网盘文件。左侧栏有主面板，会话右侧栏有标签页，agent 也能调用官方网盘工具。
 
 插件不自带网盘 SDK，包装的是夸克官方的 [quarkclouddrive](https://b.quark.cn/apps/quarkcloud_skill_info/routes/V-sc7gOBT) Skill 里的 CLI。授权、签名、限流都交给官方工具，插件只把 CLI 变成可点的界面和 agent 能调的工具。
 
@@ -42,10 +42,12 @@
 
 **方式一：让 agent 装**
 
-在对话里说官方给的那句提示词：
+在对话里粘贴官方给的那段提示词：
 
 ```
 请安装 夸克网盘Skill,并授权账号
+技能地址：https://pdds.quark.cn/download/stfile/eekkigineefiegmgo/quarkclouddrive-1.0.25.zip
+授权码：CAC-***
 ```
 
 agent 会按官方说明装好，再引导你完成账号授权。

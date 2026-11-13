@@ -314,11 +314,7 @@ DSH 输入框是 Lexical 受控编辑器，不是 textarea，改 DOM 会被覆�
 
 ## 致谢
 
-这个插件的整体做法来自 [dsh-ima](https://github.com/ikevss/dsh-ima)：把第三方服务包成一组 agent 工具，再由宿主半代理同源 HTTP 路由给面板用，最后把面板挂进左侧栏和右侧栏的 slot。注册方式、`ctx.effect` 清理、`--dsw-alias-*` 主题变量的用法都照着它来的。
-
-「引用到会话」这条链路能跑通，也是因为它先试出来的：DSH 的输入框是 Lexical 受控编辑器，直接改 DOM 会被覆盖，必须走 `conversation` 服务或 `inputActions`。这段经验省了大量试错。
-
-网盘操作全部由夸克官方的 [quarkclouddrive](https://b.quark.cn/apps/quarkcloud_skill_info/routes/V-sc7gOBT) skill 提供，本插件只做包装。
+整体做法借鉴了 [dsh-ima](https://github.com/ikevss/dsh-ima)；网盘操作全部由夸克官方的 [quarkclouddrive](https://b.quark.cn/apps/quarkcloud_skill_info/routes/V-sc7gOBT) skill 提供，本插件只做包装。
 
 ## 隐私
 

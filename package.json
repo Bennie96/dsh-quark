@@ -1,6 +1,6 @@
 {
   "name": "dsh-quark",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "夸克网盘接入 DeepSeek Harness：侧边栏浏览、搜索、分享与文件操作，并让 agent 通过官方 quarkclouddrive CLI 直接读写网盘",
   "keywords": [
     "deepseek-harness",
